@@ -51,6 +51,29 @@ https://github.com/evaleev/libint/releases
 - libxc is required: (version >= 3.0.0) for DFT calculations
 http://www.tddft.org/programs/octopus/down.php?file=libxc/libxc-3.0.0.tar.gz
 
+### Install with cmake
+
+```shell
+mkdir build
+cd build
+cmake ..
+```
+
+- about MPI :
+  * if `mpiexec` is found in your environment, MPI will be enabled
+  * if you want to control how MPI is detected, have a look at https://cmake.org/cmake/help/latest/module/FindMPI.html?highlight=findmpi#variables-for-locating-mpi
+- about scalapack :
+  * scalapack exports its cmake target (file `scalapack-targets-release.cmake` is scalapack install directory)
+  * use cmake variable `scalapack_ROOT` to tell cmake where scalapack is installed if it is a custom location, e.g.
+  ```shell
+  cmake -Dscalapack_ROOT=/opt/local/scalapack ..
+  ```
+- about Libxc :
+  * Libxc exports its cmake targets (file `LibxcTargets.cmake` in Libxc install directory); you may need to set `Libxc_ROOT` variable if Libxc is installed in a custom location
+- about Libint :
+  * Libint does not export its own targets, but provides a pkg-config file. So you may need to set `PKG_CONFIG_PATH` environment variable to provide location to `libint2.pc` (inside Libint install directory)
+- about MKL :
+  * unfortunately, MKL does not exports targets but setting `MKLROOT` environment variable should be enought to make cmake detection.
 
 ## Basis sets
 More basis sets can be obtained from [Basis Set Exchange](https://bse.pnl.gov/bse/portal)

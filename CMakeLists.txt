@@ -36,11 +36,6 @@ endif ()
 #
 set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 
-#
-# GNU compatibility,
-# see https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
-include(GNUInstallDirs)
-
 ################################################
 # checking for optional external dependencies :
 # - MPI
@@ -124,14 +119,46 @@ find_package(Python COMPONENTS Interpreter)
 add_subdirectory(src)
 
 #
-# Install documentation and examples : TODO
+# build documentation
 #
+add_subdirectory(docs)
 
 #
 # Test : TODO
 #
 
+#
+# install
+#
 
+# GNU compatibility,
+# see https://cmake.org/cmake/help/latest/module/GNUInstallDirs.html
+include(GNUInstallDirs)
+
+install(
+  TARGETS
+  molgw)
+
+install(
+  FILES
+  utils/run_molgw.py
+  utils/scf_status.py
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+install(
+  DIRECTORY
+  basis
+  DESTINATION ${CMAKE_INSTALL_BINDIR})
+
+#
+# create source archive using CPACK
+# run: `make package_source` to obtain archive
+#
+set(CPACK_SOURCE_IGNORE_FILES "${CMAKE_BINARY_DIR}" "${CMAKE_SOURCE_DIR}/.git" "${CMAKE_SOURCE_DIR}/.gitignore" )
+set(CPACK_SOURCE_GENERATOR "TGZ")
+set(CPACK_GENERATOR "TGZ")
+message(STATUS "CPack generators : ${CPACK_GENERATOR}")
+include(CPack)
 
 
 ##################### PRINT CONFIGURE STATUS ######################

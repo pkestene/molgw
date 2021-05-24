@@ -1,16 +1,7 @@
 #
-# generated sources
-#
-add_custom_target(PREPARE_SOURCECODE
-  COMMAND ${Python_EXECUTABLE} ${CMAKE_SOURCE_DIR}/src/prepare_sourcecode.py
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/src)
-
-#
 # build everything except executable
 #
 add_library(molgw_shared SHARED "")
-
-add_dependencies(molgw_shared PREPARE_SOURCECODE)
 
 #  echo_input_variables.f90
 #  echo_input_variables_yaml.f90

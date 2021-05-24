@@ -104,7 +104,9 @@ endif()
 #
 find_package(Python COMPONENTS Interpreter)
 
+#
 # TODO : create a config.h with all macros HAVE_MPI, HAVE_SCALAPACK, etc...
+#
 
 # Generate config.h
 #include(cmake/generate_config_h.cmake)
@@ -113,9 +115,13 @@ find_package(Python COMPONENTS Interpreter)
 #add_compile_options(-I${CMAKE_BINARY_DIR})
 
 #
+# generate files  and git_sha.f90
+#
+include(cmake/prepare_sourcecode.cmake)
+
+#
 # add sources
 #
-
 add_subdirectory(src)
 
 #

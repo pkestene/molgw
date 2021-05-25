@@ -292,9 +292,9 @@ message(STATUS "MPI config:")
 message("    MPI found            : ${MPI_FOUND}")
 message("    MPI version          : ${MPI_VERSION}")
 message("    MPI Fortran version  : ${MPI_Fortran_VERSION}")
-# note : MPI_<LANG>_LIBRARY_VERSION_STRING does not seem to work
-# it is defined in 
-# message("    MPI library version  : ${MPI_Fortran_LIBRARY_VERSION_STRING}")
+# note : make sure you correctly your C, C++ and Fortran compiler
+# through variable CC, CXX and FC
+message("    MPI library version  : ${MPI_Fortran_LIBRARY_VERSION_STRING}")
 message("    MPI fortran compiler : ${MPI_Fortran_COMPILER}")
 message("    MPI headers          : ${MPI_Fortran_INCLUDE_DIRS}")
 message("    MPI libraries        : ${MPI_Fortran_LIBRARIES}")

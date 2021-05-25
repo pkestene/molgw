@@ -116,6 +116,10 @@ if(MKL_FOUND)
        set(scalapack_mkl_FOUND FALSE)
      endif()
 
+     if(scalapack_mkl_FOUND)
+       add_compile_definitions(HAVE_SCALAPACK)
+     endif()
+
   else()
 
     message(STATUS "Please set USE_MKL_SCALAPACK is you want to activate MKL scalapack")

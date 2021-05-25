@@ -51,6 +51,9 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS on)
 # <PackageName>_ROOT
 ################################################
 
+# we will use MODULE mode (via pkg-config) of package detection
+find_package(PkgConfig REQUIRED)
+
 #
 # MPI
 #
@@ -63,7 +66,39 @@ endif()
 #
 # NETLIB / SCALAPACK
 #
-find_package(scalapack)
+
+# first try the MODULE mode (using pkg-config)
+# if not found try CONFIG mode
+# output: target library scalapack
+
+# set default scalapack library name
+# e.g. on Ubuntu scalapack name is scalapack-openmpi
+# you can override this by setting this variable in cmake configure
+# command line
+if(NOT DEFINED scalapack_name)
+  set(scalapack_name scalapack-openmpi)
+endif()
+pkg_check_modules(ScalapackPkg QUIET IMPORTED_TARGET ${scalapack_name})
+
+set(scalapack_found_using_pkg_config FALSE)
+set(scalapack_found_using_cmake_target FALSE)
+
+if(ScalapackPkg_FOUND)
+  message("${scalapack_name} found via pkg-config")
+  set(scalapack_FOUND TRUE)
+  set(scalapack_found_using_pkg_config TRUE)
+  add_library(scalapack ALIAS PkgConfig::ScalapackPkg)
+else()
+  message("scalapack not found via pkg-config")
+  # if we are here, it means scalapack was not found by the MODULE mode
+  # let try CONFIG mode
+  find_package(scalapack CONFIG)
+  if(scalapack_FOUND)
+    message("scalapack found via cmake config")
+    set(scalapack_found_using_cmake_target TRUE)
+  endif()
+endif()
+
 if(scalapack_FOUND)
   add_compile_definitions(HAVE_SCALAPACK)
 endif()
@@ -254,6 +289,8 @@ message("")
 message(STATUS "ScaLapack config:")
 message("    ScaLapack found       : ${scalapack_FOUND}")
 message("    Scalapack dir         : ${scalapack_DIR}")
+message("    Scalapack found via pkg-config : ${scalapack_found_using_pkg_config}")
+message("    Scalapack found via cmake cfg  : ${scalapack_found_using_cmake_target}")
 message("")
 message(STATUS "MKL config:")
 message("    MKL found             : ${scalapack_FOUND}")

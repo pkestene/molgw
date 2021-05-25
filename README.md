@@ -62,12 +62,22 @@ cmake ..
 - about MPI :
   * if `mpiexec` is found in your environment, MPI will be enabled
   * if you want to control how MPI is detected, have a look at https://cmake.org/cmake/help/latest/module/FindMPI.html?highlight=findmpi#variables-for-locating-mpi
-- about scalapack :
+- about NETLIB scalapack :
   * scalapack exports its cmake target (file `scalapack-targets-release.cmake` is scalapack install directory)
   * use cmake variable `scalapack_ROOT` to tell cmake where scalapack is installed if it is a custom location, e.g.
   ```shell
   cmake -Dscalapack_ROOT=/opt/local/scalapack ..
   ```
+- about MKL scalapack:
+  * environment variable MKLROOT must be set
+  * by defaut, cmake will search for Netlib scalapack. If you want MKL scalapack, please set variable `USE_MKL_SCALAPACK` to TRUE and use variable
+    `MKL_SCALAPACK_FLAVOR` to select scalapack flavor (default value is `scalapack_mpich_intel_64bit_seq_dyn`)
+  * example  :
+    ```shell
+    export MKLROOT=/full/path/to/mkl
+    cmake -DUSE_MKL_SCALAPACK=TRUE -DMKL_SCALAPACK_FLAVOR="scalapack_mpich_intel_64bit_omp_dyn" .. 
+    ```
+  * if `USE_MKL_SCALAPACK` is set to TRUE and Netlib scalapack is also found, mkl scalapack prevails.
 - about Libxc :
   * Libxc exports its cmake targets (file `LibxcTargets.cmake` in Libxc install directory); you may need to set `Libxc_ROOT` variable if Libxc is installed in a custom location
 - about Libint :

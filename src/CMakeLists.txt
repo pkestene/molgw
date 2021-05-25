@@ -82,7 +82,9 @@ if(MPI_FOUND)
   target_link_libraries(molgw_shared PUBLIC MPI::MPI_Fortran)
 endif()
 
-if(scalapack_FOUND)
+if(scalapack_mkl_FOUND)
+  target_link_libraries(molgw_shared PUBLIC mkl::${MKL_SCALAPACK_FLAVOR})
+elseif(scalapack_FOUND)
   target_link_libraries(molgw_shared PUBLIC scalapack)
 endif()
 

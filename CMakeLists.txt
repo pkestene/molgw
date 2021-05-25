@@ -61,7 +61,7 @@ if(MPI_FOUND)
 endif()
 
 #
-# SCALAPACK
+# NETLIB / SCALAPACK
 #
 find_package(scalapack)
 if(scalapack_FOUND)
@@ -69,11 +69,60 @@ if(scalapack_FOUND)
 endif()
 
 #
-# MKL
+# MKL / SCALAPACK
 #
 find_package(MKL)
 if(MKL_FOUND)
   add_compile_definitions(HAVE_MKL)
+
+  # check for Intel scalapack
+  #find_package(IntelScalapack)
+
+  if (USE_MKL_SCALAPACK)
+    set(MKL_SCALAPACK_FLAVOR "scalapack_mpich_intel_64bit_seq_dyn" CACHE STRING "MKL_SCALAPACK_FLAVOR, default : scalapack_mpich_intel_64bit_seq_dyn")
+    
+    # list of valid value for MKL_SCALAPACK_FLAVOR
+    set_property(CACHE MKL_SCALAPACK_FLAVOR PROPERTY
+      STRINGS
+       scalapack_mpich_intel_32bit_seq_st
+       scalapack_ompi_intel_32bit_seq_st
+       scalapack_mpich_intel_32bit_omp_st
+       scalapack_ompi_intel_32bit_omp_st
+       scalapack_mpich_intel_32bit_tbb_st
+       scalapack_ompi_intel_32bit_tbb_st
+       scalapack_mpich_intel_64bit_seq_st
+       scalapack_ompi_intel_64bit_seq_st
+       scalapack_mpich_intel_64bit_omp_st
+       scalapack_ompi_intel_64bit_omp_st
+       scalapack_mpich_intel_64bit_tbb_st
+       scalapack_ompi_intel_64bit_tbb_st
+       scalapack_mpich_intel_32bit_seq_dyn
+       scalapack_ompi_intel_32bit_seq_dyn
+       scalapack_mpich_intel_32bit_omp_dyn
+       scalapack_ompi_intel_32bit_omp_dyn
+       scalapack_mpich_intel_32bit_tbb_dyn
+       scalapack_ompi_intel_32bit_tbb_dyn
+       scalapack_mpich_intel_64bit_seq_dyn
+       scalapack_ompi_intel_64bit_seq_dyn
+       scalapack_mpich_intel_64bit_omp_dyn
+       scalapack_ompi_intel_64bit_omp_dyn
+       scalapack_mpich_intel_64bit_tbb_dyn
+       scalapack_ompi_intel_64bit_tbb_dyn)
+
+     # cross-check that mkl/scalapack target actually exists
+     if(TARGET mkl::${MKL_SCALAPACK_FLAVOR})
+       set(scalapack_mkl_FOUND TRUE)
+     else()
+       set(scalapack_mkl_FOUND FALSE)
+     endif()
+
+  else()
+
+    message(STATUS "Please set USE_MKL_SCALAPACK is you want to activate MKL scalapack")
+    set(scalapack_mkl_FOUND FALSE)
+
+  endif()
+
 endif()
 
 #
@@ -115,7 +164,7 @@ find_package(Python COMPONENTS Interpreter)
 #add_compile_options(-I${CMAKE_BINARY_DIR})
 
 #
-# generate files  and git_sha.f90
+# generate files basis_path.f90 and git_sha.f90
 #
 include(cmake/prepare_sourcecode.cmake)
 
@@ -189,8 +238,14 @@ message("")
 message(STATUS "MPI config:")
 message("    MPI found            : ${MPI_FOUND}")
 message("    MPI version          : ${MPI_VERSION}")
-message("    MPI library version  : ${MPI_Fortran_LIBRARY_VERSION_STRING}")
+message("    MPI Fortran version  : ${MPI_Fortran_VERSION}")
+# note : MPI_<LANG>_LIBRARY_VERSION_STRING does not seem to work
+# it is defined in 
+# message("    MPI library version  : ${MPI_Fortran_LIBRARY_VERSION_STRING}")
 message("    MPI fortran compiler : ${MPI_Fortran_COMPILER}")
+message("    MPI headers          : ${MPI_Fortran_INCLUDE_DIRS}")
+message("    MPI libraries        : ${MPI_Fortran_LIBRARIES}")
+#message("    MPI link flags       : ${MPI_Fortran_LINK_FLAGS}")
 message("")
 message(STATUS "ScaLapack config:")
 message("    ScaLapack found       : ${scalapack_FOUND}")
@@ -198,6 +253,11 @@ message("    Scalapack dir         : ${scalapack_DIR}")
 message("")
 message(STATUS "MKL config:")
 message("    MKL found             : ${scalapack_FOUND}")
+if(MKL_FOUND)
+  message("    MKL Scalapack found   : ${scalapack_mkl_FOUND}")
+  message("    USE_MKL_SCALAPACK     : ${USE_MKL_SCALAPACK}")
+  message("    MKL_SCALAPACK_FLAVOR  : ${MKL_SCALAPACK_FLAVOR}")
+endif()
 message("")
 message(STATUS "Libxc config:")
 message("    Libxc found        : ${Libxc_FOUND}")

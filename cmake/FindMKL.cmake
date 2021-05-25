@@ -295,13 +295,14 @@ foreach(_libtype "ST" "DYN")
                     endif()
 
                     if(_mkl_scalapack_lib
-                       AND TARGET ${_blacs_tgt}
-                       AND NOT TARGET ${_scalapack_tgt})
-                        set(_scalapack_libs "${_mkl_scalapack_lib}"
-                                            "${_blacs_tgt}")
-                        add_library(${_scalapack_tgt} INTERFACE IMPORTED)
-                        set_target_properties(${_scalapack_tgt} PROPERTIES
-                            INTERFACE_LINK_LIBRARIES "${_scalapack_libs}")
+                        AND TARGET ${_blacs_tgt}
+                        AND NOT TARGET ${_scalapack_tgt})
+                      set(_scalapack_libs "${_mkl_scalapack_lib}"
+                        "${_blacs_tgt}")
+                      add_library(${_scalapack_tgt} INTERFACE IMPORTED)
+                      set_target_properties(${_scalapack_tgt} PROPERTIES
+                        INTERFACE_LINK_LIBRARIES "${_scalapack_libs}")
+                      message("Create target for ${_scalapack_tgt}")
                     endif()
                 endforeach()
             endforeach()

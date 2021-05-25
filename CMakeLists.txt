@@ -165,9 +165,23 @@ if(MKL_FOUND)
 endif()
 
 #
-# Libcx
+# Libcx 
+# 1. prefer using pkg-config,
+# 2. use cmake target file if not found with pkg-config
 #
-find_package(Libxc REQUIRED)
+pkg_check_modules(Libxc QUIET IMPORTED_TARGET libxc)
+
+if(Libxc_FOUND)
+  message("Libxc found via pkg-config")
+  set(Libxc_FOUND TRUE)
+  #set(Libxc_VERSION ${LibxcPkg_VERSION})
+  #set(Libxc_INCLUDE_DIRS ${LibxcPkg_INCLUDE_DIRS})
+  add_library(Libxc::xc ALIAS PkgConfig::Libxc)
+else()
+  find_package(Libxc REQUIRED)
+  message("Libxc found via cmake target")
+endif()
+
 if(Libxc_FOUND)
   add_compile_definitions(HAVE_LIBXC)
 endif()

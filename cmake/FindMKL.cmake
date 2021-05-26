@@ -266,6 +266,7 @@ foreach(_libtype "ST" "DYN")
                     set_target_properties(${_mkl_tgt} PROPERTIES
                       INTERFACE_INCLUDE_DIRECTORIES "${MKL_INCLUDE_DIR}"
                       INTERFACE_LINK_LIBRARIES "${_mkl_libs}")
+                    message("Create target for ${_mkl_tgt}")
                 endif()
 
                 foreach(_mpi_impl "MPICH" "OMPI")
@@ -276,22 +277,23 @@ foreach(_libtype "ST" "DYN")
                     set(_scalapack_tgt mkl::scalapack_${_tgt_config})
 
                     if(_mkl_blacs_lib
-                       AND TARGET ${_mkl_tgt}
-                       AND TARGET MPI::MPI_CXX
-                       AND NOT TARGET ${_blacs_tgt})
-                        set(_blacs_libs "${_mkl_linker_pre_flags_${_libtype}}"
-                                        "${_mkl_interface_lib}"
-                                        "${_mkl_threading_lib}"
-                                        "${_mkl_core_lib}"
-                                        "${_mkl_blacs_lib}"
-                                        "${_mkl_linker_post_flags_${_libtype}}"
-                                        "MPI::MPI_CXX"
-                                        "${_mkl_dep_${_threading}}"
-                                        "Threads::Threads")
-                        add_library(${_blacs_tgt} INTERFACE IMPORTED)
-                        set_target_properties(${_blacs_tgt} PROPERTIES
-                            INTERFACE_INCLUDE_DIRECTORIES "${MKL_INCLUDE_DIR}"
-                            INTERFACE_LINK_LIBRARIES "${_blacs_libs}")
+                        AND TARGET ${_mkl_tgt}
+                        AND TARGET MPI::MPI_CXX
+                        AND NOT TARGET ${_blacs_tgt})
+                      set(_blacs_libs "${_mkl_linker_pre_flags_${_libtype}}"
+                                      "${_mkl_interface_lib}"
+                                      "${_mkl_threading_lib}"
+                                      "${_mkl_core_lib}"
+                                      "${_mkl_blacs_lib}"
+                                      "${_mkl_linker_post_flags_${_libtype}}"
+                                      "MPI::MPI_CXX"
+                                      "${_mkl_dep_${_threading}}"
+                                      "Threads::Threads")
+                       add_library(${_blacs_tgt} INTERFACE IMPORTED)
+                       set_target_properties(${_blacs_tgt} PROPERTIES
+                         INTERFACE_INCLUDE_DIRECTORIES "${MKL_INCLUDE_DIR}"
+                         INTERFACE_LINK_LIBRARIES "${_blacs_libs}")
+                       message("Create target for ${_blacs_tgt}")
                     endif()
 
                     if(_mkl_scalapack_lib

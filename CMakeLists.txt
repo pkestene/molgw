@@ -108,10 +108,47 @@ endif()
 #
 find_package(MKL)
 if(MKL_FOUND)
+
+  set(MKL_FLAVOR "mkl_gf_64bit_seq_dyn" CACHE STRING "MKL_FLAVOR, default : mkl_gf_64bit_seq_dyn")
+
+  # list of valid value for MKL_SCALAPACK_FLAVOR
+  set_property(CACHE MKL_FLAVOR PROPERTY
+    STRINGS
+    mkl_intel_32bit_seq_st
+    mkl_intel_32bit_omp_st
+    mkl_intel_32bit_tbb_st
+    mkl_gf_32bit_seq_st
+    mkl_gf_32bit_omp_st
+    mkl_gf_32bit_tbb_st
+    mkl_intel_64bit_seq_st
+    mkl_intel_64bit_omp_st
+    mkl_intel_64bit_tbb_st
+    mkl_gf_64bit_seq_st
+    mkl_gf_64bit_omp_st
+    mkl_gf_64bit_tbb_st
+    mkl_intel_32bit_seq_dyn
+    mkl_intel_32bit_omp_dyn
+    mkl_intel_32bit_tbb_dyn
+    mkl_gf_32bit_seq_dyn
+    mkl_gf_32bit_omp_dyn
+    mkl_gf_32bit_tbb_dyn
+    mkl_intel_64bit_seq_dyn
+    mkl_intel_64bit_omp_dyn
+    mkl_intel_64bit_tbb_dyn
+    mkl_gf_64bit_seq_dyn
+    mkl_gf_64bit_omp_dyn
+    mkl_gf_64bit_tbb_dyn)
+
   add_compile_definitions(HAVE_MKL)
 
-  # check for Intel scalapack
-  #find_package(IntelScalapack)
+  # cross-check that mkl/scalapack target actually exists
+  if(TARGET mkl::${MKL_FLAVOR})
+    set(MKL_FLAVOR_FOUND TRUE)
+  else()
+    set(MKL_FLAVOR_FOUND FALSE)
+    message("Warning: MKL_FLAVOR = ${MKL_FLAVOR} not found")
+  endif()
+
 
   if (USE_MKL_SCALAPACK)
     set(MKL_SCALAPACK_FLAVOR "scalapack_mpich_intel_64bit_seq_dyn" CACHE STRING "MKL_SCALAPACK_FLAVOR, default : scalapack_mpich_intel_64bit_seq_dyn")
@@ -146,19 +183,20 @@ if(MKL_FOUND)
 
      # cross-check that mkl/scalapack target actually exists
      if(TARGET mkl::${MKL_SCALAPACK_FLAVOR})
-       set(scalapack_mkl_FOUND TRUE)
+       set(SCALAPACK_MKL_FOUND TRUE)
      else()
-       set(scalapack_mkl_FOUND FALSE)
+       set(SCALAPACK_MKL_FOUND FALSE)
+       message("Warning: MKL_SCALAPACK_FLAVOR = ${MKL_SCALAPACK_FLAVOR} not found")
      endif()
 
-     if(scalapack_mkl_FOUND)
+     if(SCALAPACK_MKL_FOUND)
        add_compile_definitions(HAVE_SCALAPACK)
      endif()
 
   else()
 
     message(STATUS "Please set USE_MKL_SCALAPACK is you want to activate MKL scalapack")
-    set(scalapack_mkl_FOUND FALSE)
+    set(SCALAPACK_MKL_FOUND FALSE)
 
   endif()
 
@@ -307,10 +345,12 @@ message("    Scalapack found via pkg-config : ${scalapack_found_using_pkg_config
 message("    Scalapack found via cmake cfg  : ${scalapack_found_using_cmake_target}")
 message("")
 message(STATUS "MKL config:")
-message("    MKL found             : ${scalapack_FOUND}")
+message("    MKL found             : ${MKL_FOUND}")
 if(MKL_FOUND)
-  message("    MKL Scalapack found   : ${scalapack_mkl_FOUND}")
+  message("    MKL_FLAVOR_FOUND      : ${MKL_FLAVOR_FOUND}")
+  message("    MKL_FLAVOR            : ${MKL_FLAVOR}")
   message("    USE_MKL_SCALAPACK     : ${USE_MKL_SCALAPACK}")
+  message("    MKL SCALAPACK found   : ${SCALAPACK_MKL_FOUND}")
   message("    MKL_SCALAPACK_FLAVOR  : ${MKL_SCALAPACK_FLAVOR}")
 endif()
 message("")

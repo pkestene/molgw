@@ -329,7 +329,7 @@ message("")
 message(STATUS "MPI config:")
 message("    MPI found            : ${MPI_FOUND}")
 message("    MPI version          : ${MPI_VERSION}")
-message("    MPI Fortran version  : ${MPI_Fortran_VERSION}")
+message("    MPI standard version : ${MPI_Fortran_VERSION}")
 # note : make sure you correctly your C, C++ and Fortran compiler
 # through variable CC, CXX and FC
 message("    MPI library version  : ${MPI_Fortran_LIBRARY_VERSION_STRING}")

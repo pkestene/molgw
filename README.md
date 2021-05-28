@@ -70,14 +70,18 @@ cmake ..
   ```
 - about MKL scalapack:
   * environment variable MKLROOT must be set
-  * by defaut, cmake will search for Netlib scalapack. If you want MKL scalapack, please set variable `USE_MKL_SCALAPACK` to TRUE and use variable
-    `MKL_SCALAPACK_FLAVOR` to select scalapack flavor (default value is `scalapack_mpich_intel_64bit_seq_dyn`)
+  * by defaut, cmake will search for Netlib scalapack. If you want MKL scalapack, please set variable `USE_MKL_SCALAPACK` to TRUE.
+    ```shell
+    export MKLROOT=/full/path/to/mkl
+    cmake -DUSE_MKL_SCALAPACK=TRUE ..
+    ```
+
+    There are several scalapack flavors depending on mkl interface (32 or 64 bit) and on threading type (sequential, OpenMP or TBB). We set a default value for `MKL_SCALAPACK_FLAVOR` but you can override it, e.g.
   * example  :
     ```shell
     export MKLROOT=/full/path/to/mkl
-    cmake -DUSE_MKL_SCALAPACK=TRUE -DMKL_SCALAPACK_FLAVOR="scalapack_mpich_intel_64bit_omp_dyn" .. 
+    cmake -DUSE_MKL_SCALAPACK=TRUE -DMKL_SCALAPACK_FLAVOR="scalapack_mpich_intel_64bit_omp_dyn" ..
     ```
-  * if `USE_MKL_SCALAPACK` is set to TRUE and Netlib scalapack is also found, mkl scalapack prevails.
 - about Libxc :
   * Libxc exports its cmake targets (file `LibxcTargets.cmake` in Libxc install directory); you may need to set `Libxc_ROOT` variable if Libxc is installed in a custom location
 - about Libint :

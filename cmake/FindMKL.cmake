@@ -7,6 +7,11 @@
 #
 # Author: Teodor Nikolov (tnikolov@cscs.ch)
 #
+# Modified to define variables
+# - MKL_SCALAPACK_FLAVOR_DEFAULT
+# - MKL_BLAS_FLAVOR_DEFAULT
+# according to what is available on execution platform
+#
 #[=======================================================================[.rst:
 FindMKL
 -------
@@ -235,6 +240,50 @@ if (TARGET OpenMP::OpenMP_CXX)
   set(_mkl_dep_found_OMP TRUE)
 endif()
 
+####################################################
+
+#
+# make default values for
+# - MKL_BLAS_FLAVOR_DEFAULT
+# - MKL_SCALAPACK_FLAVOR_DEFAULT
+#
+if(NOT DEFINED MKL_XX_BIT)
+  set(MKL_XX_BIT 32bit)
+endif()
+
+if( (NOT MKL_XX_BIT STREQUAL "32bit") AND (NOT MKL_XX_BIT STREQUAL "64bit"))
+  message(FATAL_ERROR "MKL_XX_BIT invalid value; valid values are 32bit and 64bit")
+endif()
+
+if (NOT DEFINED MKL_THREADING_TYPE)
+  if(OPENMP_FOUND)
+    set (MKL_THREADING_TYPE "omp")
+    #elseif(TBB_FOUND)
+    #  set (scalapack_threading "tbb")
+  else()
+    set (MKL_THREADING_TYPE "seq")
+  endif()
+endif()
+
+include(get_mpi_vendor)
+if(MPI_VENDOR STREQUAL "OpenMPI")
+  set(mpi_type "ompi")
+else()
+  set(mpi_type "mpich")
+endif()
+
+if (CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
+  set(compiler_type gf)
+else()
+  set(compiler_type intel)
+endif()
+
+set(MKL_BLAS_FLAVOR_DEFAULT mkl_${compiler_type}_${MKL_XX_BIT}_${MKL_THREADING_TYPE}_dyn)
+set(MKL_SCALAPACK_FLAVOR_DEFAULT scalapack_${mpi_type}_intel_${MKL_XX_BIT}_${MKL_THREADING_TYPE}_dyn)
+
+####################################################
+
+#
 # Define all blas, blacs and scalapack
 #
 foreach(_libtype "ST" "DYN")
